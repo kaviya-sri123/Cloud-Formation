@@ -1,0 +1,73 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Create RDS instance - Intern Task"
+Parameters:
+  DBInstanceID:
+    Default: mydbinstance
+    Description: My database instance
+    Type: String
+    MinLength: '1'
+    MaxLength: '63'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    
+  DBName:
+    Default: mydb
+    Description: My database
+    Type: String
+    MinLength: '1'
+    MaxLength: '64'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+    
+  DBInstanceClass:
+    Default: db.m5.large
+    Description: DB instance class
+    Type: String
+    
+  DBAllocatedStorage:
+    Default: '20'
+    Description: The size of the database (GiB)
+    Type: Number
+    MinValue: '20'
+    MaxValue: '65536'
+    
+  DBUsername:
+    
+    Description: Username for MySQL database access
+    Type: String
+    MinLength: '1'
+    MaxLength: '20'
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+   
+  DBPassword:
+   
+    Description: Password MySQL database access
+    Type: String
+    MinLength: '6'
+    MaxLength: '20'
+    AllowedPattern: '[a-zA-Z0-9]*'
+   
+Resources:
+  MyDB:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBInstanceIdentifier: !Ref DBInstanceID
+      DBName: !Ref DBName
+      DBInstanceClass: !Ref DBInstanceClass
+      AllocatedStorage: !Ref DBAllocatedStorage
+      PubliclyAccessible : True
+      Engine: MySQL
+      EngineVersion: "8.0.33"
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      Tags:
+        - Key: Env 
+          Value: Prod
+        - Key: Name 
+          Value: MyDemoRDSInstance   
+        - Key : Service 
+          Value : Intern-Service
+        - Key : Pod 
+          Value : Intern- Pod  
+        
+Outputs:
+    DBName:
+        Value: !Ref 'MyDB'
