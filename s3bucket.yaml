@@ -1,0 +1,85 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "Creates S3 bucket - Intern Task"
+
+Parameters:
+    S3BucketName:
+        Description: Enter S3 bucket name
+        Type: String
+        MinLength: 3
+        MaxLength: 10
+    Encryption:
+        Type: String
+        Description: "Would you like to enable default encryption for objects stored in your bucket?"
+        AllowedValues:
+          - "true"
+          - "false"
+        ConstraintDescription: "A valid boolean value is required (true/false)"
+        Default: "true"
+    KmsKeyId:
+        Type: String
+        Description: Would you like to use a custom KMS Key for encryption?  (Requires a valid KMS Key Id)
+        AllowedPattern: "^([a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12})$"
+        Default: "12345678-aaaa-bbbb-cccc-123456789abc"
+    Versioning:
+        Type: String
+        Description: Would you like to enable versioning for objects in the S3 Bucket?
+        AllowedValues:
+         - "Enabled"
+         - "Suspended"
+        Default: "Suspended"
+    ACL:
+        Type: String
+        Description: Would you like to apply a canned access control list to grant predefined permissions?
+        AllowedValues:
+            - "Private"   
+            - "PublicRead"
+            - "PublicReadWrite"      
+            - "AwsExecRead"   
+            - "AuthenticatedRead"     
+            - "BucketOwnerRead"  
+            - "BucketOwnerFullControl"   
+            - "LogDeliveryWrite" 
+            - "None"
+        Default: "None"
+
+Conditions:
+  hasACL:
+    !Not [!Equals [!Ref ACL, "None"]]
+
+  isEncrypted:
+    !Equals [!Ref Encryption, "true"]
+
+  hasKmsKey:
+    !Not [!Equals [!Ref KmsKeyId, "12345678-aaaa-bbbb-cccc-123456789abc"]]
+
+  useCustomKey: !And
+  - Condition: isEncrypted
+  - Condition: hasKmsKey
+
+Resources:
+    S3Bucket: # logical id/name
+        Type: AWS::S3::Bucket # type of resource
+        Properties:
+            BucketName: !Ref S3BucketName
+            VersioningConfiguration:
+                Status: !Ref Versioning
+            AccessControl: !If [hasACL, !Ref ACL, !Ref "AWS::NoValue"]
+            BucketEncryption: 
+              ServerSideEncryptionConfiguration:
+                - ServerSideEncryptionByDefault:
+                    KMSMasterKeyID: !If [useCustomKey, !Ref KmsKeyId, !Ref "AWS::NoValue"]
+                    SSEAlgorithm: !If [useCustomKey, "aws:kms", "AES256"]
+            
+            Tags:
+              - Key: Env 
+                Value: Prod
+              - Key: Name 
+                Value: MyS3Bucket
+              - Key: Service 
+                Value: Intern-Service
+              - Key: Pod
+                Value: Intern-Pod
+
+Outputs:
+    BucketName:
+        Value: !Ref S3Bucket  # Corrected the reference to the resource ID
