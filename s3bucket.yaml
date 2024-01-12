@@ -71,13 +71,13 @@ Resources:
                     SSEAlgorithm: !If [useCustomKey, "aws:kms", "AES256"]
             
             Tags:
-              - Key: Env 
+              - Key: env 
                 Value: Prod
               - Key: Name 
                 Value: MyS3Bucket
-              - Key: Service 
+              - Key: service 
                 Value: Intern-Service
-              - Key: Pod
+              - Key: pod
                 Value: Intern-Pod
 
 Outputs:
