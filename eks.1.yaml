@@ -1,0 +1,61 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Amazon EKS Cluster'
+
+Parameters:
+  ClusterName:
+    Type: String
+    Default: Prod
+  KubernetesVersion:
+    Type: String
+    Default: "1.22"
+  EksServiceRoleArn:
+    Type: String
+    Default: "arn:aws:iam::012345678910:role/eks-service-role-AWSServiceRoleForAmazonEKS-EXAMPLEBQ4PI"
+  SecurityGroupId:
+    Type: String
+    Default: "sg-6979fe18"
+  SubnetId1:
+    Type: String
+    Default: "subnet-6782e71e"
+  SubnetId2:
+    Type: String
+    Default: "subnet-e7e761ac"
+  EndpointPublicAccess:
+    Type: String
+    Default: "false"
+  EndpointPrivateAccess:
+    Type: String
+    Default: "true"
+  PublicAccessCidr:
+    Type: String
+    Default: "1.1.1.2/32"
+  VpcId:
+    Type: String
+    Default: "vpc-12345678" 
+  TagKey:
+    Type: String
+    Default: "env"
+  TagValue:
+    Type: String
+    Default: "prod"
+
+Resources:
+  EKSCluster:
+    Type: AWS::EKS::Cluster
+    Properties:
+      Name: !Ref ClusterName
+      Version: !Ref KubernetesVersion
+      RoleArn: !Ref EksServiceRoleArn
+      ResourcesVpcConfig:
+        VpcId: !Ref VpcId
+        SecurityGroupIds:
+          - !Ref SecurityGroupId
+        SubnetIds:
+          - !Ref SubnetId1
+          - !Ref SubnetId2
+        EndpointPublicAccess: !Ref EndpointPublicAccess
+        EndpointPrivateAccess: !Ref EndpointPrivateAccess
+        PublicAccessCidrs: [ !Ref PublicAccessCidr ]
+      Tags:
+        - Key: !Ref TagKey
+          Value: !Ref TagValue
