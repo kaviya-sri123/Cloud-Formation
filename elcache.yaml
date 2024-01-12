@@ -1,0 +1,48 @@
+Parameters:
+  InstanceSecurityGroupName:
+    Description: Security Group Name of the EC2 instance
+    Type: AWS::EC2::SecurityGroup::GroupName
+  Engine:
+    Description: Elasticache Engine
+    Type: String
+    Default: redis
+    AllowedValues:
+      - memcached
+      - redis
+  CacheNodeType:
+    Description: Elasticache Cache Node Type
+    Type: String
+    Default: cache.t2.micro
+    AllowedValues:
+      - cache.t2.micro
+      - cache.t2.small
+      - cache.t2.large
+  NumCacheNodes:
+    Description: Number of Elasticache Cache Nodes
+    Type: String
+    Default: '1'
+
+Resources:
+  ElasticacheSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Elasticache Security Group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 11211
+          ToPort: 11211
+          SourceSecurityGroupName: !Ref InstanceSecurityGroupName
+
+  ElasticacheCluster:
+    Type: 'AWS::ElastiCache::CacheCluster'
+    Properties:    
+      Engine: !Ref Engine
+      CacheNodeType: !Ref CacheNodeType
+      NumCacheNodes: !Ref NumCacheNodes
+      VpcSecurityGroupIds:
+        - !GetAtt ElasticacheSecurityGroup.GroupId
+
+Outputs:
+  ElasticacheClusterId:
+    Description: ID of the Elasticache Cluster
+    Value: !Ref ElasticacheCluster
