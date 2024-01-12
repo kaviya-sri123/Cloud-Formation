@@ -10,9 +10,11 @@ Parameters:
       - t2.micro
       - t2.small
       - t2.large
-  
-  
-    
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: Should be an existing EC2 KeyPair.
+
 Resources: 
   Instance: # logical id 
     Type: AWS::EC2::Instance # type 
@@ -22,6 +24,7 @@ Resources:
       ImageId: ami-0dba2cb6798deb6d8     
       SecurityGroupIds:
         - sg-07e64362c7a9987f2
+      KeyName: !Ref KeyName
       
       Tags:
         - Key: Env 
