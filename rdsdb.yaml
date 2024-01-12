@@ -59,13 +59,13 @@ Resources:
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       Tags:
-        - Key: Env 
+        - Key: env 
           Value: Prod
         - Key: Name 
           Value: MyDemoRDSInstance   
-        - Key : Service 
+        - Key : service 
           Value : Intern-Service
-        - Key : Pod 
+        - Key : pod 
           Value : Intern- Pod  
         
 Outputs:
